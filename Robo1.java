@@ -1,12 +1,6 @@
 package DeLeon;
 import robocode.*;
-//import java.awt.Color;
-
-// API help : https://robocode.sourceforge.io/docs/robocode/robocode/Robot.html
-
-/**
- * Robo1 - a robot by (your name here)
- */
+// oi
 public class Robo1 extends Robot
 {
 	public void run() {
