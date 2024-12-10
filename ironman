@@ -1,0 +1,129 @@
+package Man;
+
+import robocode.*;
+import robocode.util.Utils;
+import java.awt.Color;
+import java.util.Random;
+
+public void RobotEvolutiuon extends AdvancedRobot {
+    // Definir alguns parâmetros
+    private Random random;
+    private double enemyEnergy = 100;  
+    private double prevEnergy = 100;   
+
+   
+    public void RobotEvolution() {
+        random = new Random();
+    }
+
+   
+    public void run() {
+        setBodyColor(Color.black);
+        setGunColor(Color.red);
+        setRadarColor(Color.black);
+
+        // Loop infinito do robô
+        while (true) {
+            scan();  // Escaneia constantemente
+
+            // Movimentação inteligente e evasiva
+            moveRandomly();
+
+            // Ajusta a orientação da arma
+            adjustGunPosition();
+
+            // Ação de atirar quando possível
+            fireWhenPossible();
+        }
+    }
+
+    // Método para movimentação aleatória e evasiva
+    private void moveRandomly() {
+        // Desviar de paredes ou obstáculos
+        if (getDistanceRemaining() == 0) {
+            double turnAngle = random.nextInt(180) - 90; // Gira aleatoriamente entre -90 e 90
+            turnRight(turnAngle);
+            ahead(100 + random.nextInt(100));  // Avança uma distância aleatória entre 100 e 200
+        }
+    }
+
+    // Método para ajustar a posição da arma em direção ao inimigo
+    private void adjustGunPosition() {
+        // Gira a arma em direção ao inimigo com base no radar
+        if (getRadarTurnRemaining() == 0) {
+            turnGunRight(10);  // Gira a arma suavemente
+        }
+    }
+
+    // Método para atirar de forma inteligente
+    private void fireWhenPossible() {
+        // Verifica se o inimigo está a uma distância segura para atirar
+        if (getEnergy() > 20) {
+            fire(1);  // Atira com potência 1
+        } else {
+            fire(0.5);  // Atira com potência menor quando a energia estiver baixa
+        }
+    }
+
+    // Método chamado quando o radar detecta um inimigo
+    public void onScannedRobot(ScannedRobotEvent e) {
+        // Ações ao detectar um inimigo
+
+        // Ajusta o radar para seguir o inimigo
+        double enemyBearing = e.getBearing();
+        double radarTurn = getHeading() - getRadarHeading() + enemyBearing;
+        radarTurn = Utils.normalRelativeAngleDegrees(radarTurn);
+        turnRadarRight(radarTurn);
+
+        // Evitar ser atingido se o inimigo tiver energia mais alta
+        if (e.getEnergy() > enemyEnergy) {
+            // Desloca-se para longe do inimigo se ele for mais forte
+            back(50);
+        } else {
+            // Aproxima-se para atacar
+            ahead(50);
+        }
+
+        // Atualiza a energia do inimigo
+        enemyEnergy = e.getEnergy();
+
+        // Dispara na direção do inimigo
+        fireWhenPossible();
+    }
+
+    // Método chamado quando o robô é atingido por uma bala
+    public void onHitByBullet(HitByBulletEvent e) {
+        // Tática evasiva ao ser atingido: gira 180 graus e se afasta
+        turnRight(180);
+        ahead(50);
+    }
+
+    // Método chamado quando o robô bate em uma parede
+    public void onHitWall(HitWallEvent e) {
+        // Ao bater em uma parede, gira aleatoriamente e avança
+        turnRight(random.nextInt(180));
+        ahead(100);
+    }
+
+    // Método chamado quando o robô é danificado por outro robô
+    public void onHitRobot(HitRobotEvent e) {
+        // Ao colidir com outro robô, afasta-se e atira
+        back(50);
+        fireWhenPossible();
+    }
+}
+    // Método para realizar ajustes estratégicos de acordo com a energia do inimigo
+    public void adjustStrategy() {
+        if (enemyEnergy < prevEnergy) {
+            // Se o inimigo perdeu energia, ele pode estar mais vulnerável
+            // Aumenta a agressividade
+            ahead(50);
+            fire(2);  // Aumenta a potência do tiro
+        } else {
+            // Se o inimigo está mais forte, se afasta
+            back(50);
+            fire(0.5);  // Dispara com menos potência para economizar energia
+        }
+        prevEnergy = enemyEnergy;  // Atualiza a energia anterior
+    }
+}
