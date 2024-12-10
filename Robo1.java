@@ -1,12 +1,6 @@
 package DeLeon;
 import robocode.*;
-//import java.awt.Color;
 
-// API help : https://robocode.sourceforge.io/docs/robocode/robocode/Robot.html
-
-/**
- * Robo1 - a robot by (your name here)
- */
 public class Robo1 extends Robot
 {
 	public void run() {
@@ -33,6 +27,9 @@ public class Robo1 extends Robot
 	public void onHitByBullet (HitByBulletEvent i) {
 		double larguraArena = getBattleFieldWidth();
 		back(larguraArena / 5);
+		turnRight(30);
+		ahead(larguraArena / 6);
+		
 	}
 	
 	public void onHitWall (HitWallEvent i) {
