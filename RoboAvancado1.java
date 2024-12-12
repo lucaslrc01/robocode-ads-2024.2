@@ -20,13 +20,13 @@ public class RoboAvancado1 extends AdvancedRobot {
         double distancia = inimigo.getDistance();
         double anguloParaOrbitar = inimigo.getBearing() + 90;
         
-		setTurnRight(anguloParaOrbitar);
+	setTurnRight(anguloParaOrbitar);
         setAhead(50);
         
-		double anguloParaInimigo = getHeading() + inimigo.getBearing();
+	double anguloParaInimigo = getHeading() + inimigo.getBearing();
         double anguloArma = robocode.util.Utils.normalRelativeAngleDegrees(anguloParaInimigo - getGunHeading());
         
-		setTurnGunRight(anguloArma);
+	setTurnGunRight(anguloArma);
 
         if (distancia > 100) {
             setAhead(50);
