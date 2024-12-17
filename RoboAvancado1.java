@@ -1,54 +1,41 @@
-package Avancado;
 import robocode.*;
+import java.awt.*;
 
 public class RoboAvancado1 extends AdvancedRobot {
-
+    
     public void run() {
-       while (true) {
-            turnRadarRight(360);
+    
+        setAdjustRadarForGunTurn(true);
+        setAdjustGunForRobotTurn(true);
 
-            if (proxParede()) {
-                turnRight(90);  
-                ahead(100);    
-            } else {
-                ahead(50);    
-            }
+        while (true) {        
+            setTurnRadarRight(360);
+            execute();
         }
     }
 
-     public void onScannedRobot(ScannedRobotEvent inimigo) {
-        double distancia = inimigo.getDistance();
-        double anguloParaOrbitar = inimigo.getBearing() + 90;
-        
-	setTurnRight(anguloParaOrbitar);
-        setAhead(50);
-        
-	double anguloParaInimigo = getHeading() + inimigo.getBearing();
-        double anguloArma = robocode.util.Utils.normalRelativeAngleDegrees(anguloParaInimigo - getGunHeading());
-        
-	setTurnGunRight(anguloArma);
+    
+    public void onScannedRobot(ScannedRobotEvent inimigo) {
+        double distance = inimigo.getDistance(); 
+        double angleToEnemy = inimigo.getBearing(); 
 
-        if (distancia > 100) {
-            setAhead(50);
-        } else {
-            setBack(50);
+ 
+        double armaAngulo = getHeading() + angleToEnemy - getGunHeading();
+        while (armaAngulo > 180) {
+			armaAngulo -= 360;
+		}
+  		while (armaAngulo < -180) {
+			armaAngulo += 360;
+		}
+		
+		setTurnGunRight(armaAngulo);
+
+        double firePower = Math.min(400 / distance, 3);
+        if (getGunHeat() == 0 && getEnergy() > firePower) {
+            setFire(firePower);
         }
 
-        if (getGunHeat() == 0) {
-            fire(2);
-        }
-
-        execute();
+        setTurnRight(angleToEnemy + 90); 
+        setAhead(150); 
     }
-	
-	private boolean proxParede() {
-       
-        double x = getX();
-        double y = getY();
-
-
-        double DistSegura = 60;
-        return (x < DistSegura || x > getBattleFieldWidth() - DistSegura || y < DistSegura || y > getBattleFieldHeight() - DistSegura);
-    }
-
 }
