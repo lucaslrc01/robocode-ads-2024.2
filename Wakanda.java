@@ -54,7 +54,9 @@ public class Wakanda extends Robot
 	 */
 	public void onHitByBullet(HitByBulletEvent e) {
 		// Replace the next line with any behavior you would like
-		back(10);
+		super();
+		this.bearing = bearing;
+		this.bullet = bullet;
 	}
 	
 	/**
